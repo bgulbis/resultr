@@ -1,0 +1,21 @@
+Package: resultr
+Type: Package
+Title: Perform Comparisons and Display Result Tables
+Version: 0.1.0
+Depends:
+    R (>= 2.10)
+Authors@R: person("Brian", "Gulbis", email="brian.gulbis@gmail.com", role=c("aut","cre"))
+Description: This package will take categorical or continuous data in a data 
+    frame and perform a comparitive analysis. The results will be reported in a 
+    markdown table.
+License: GPL-3
+LazyData: true
+Imports:
+    broom,
+    dplyr,
+    knitr,
+    kableExtra,
+    rlang,
+    stringr,
+    tidyr
+RoxygenNote: 6.0.1
