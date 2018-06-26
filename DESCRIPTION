@@ -15,6 +15,7 @@ Imports:
     dplyr,
     knitr,
     kableExtra,
+    magrittr,
     rlang,
     stringr,
     tidyr
