@@ -1,17 +1,44 @@
 # functions for categorical variables
 
-p_cat <- function(df, ...) {
-    grp <- quos(...)
-    var_name <- sym("var_name")
+#' Perform significance testing on categorical data
+#'
+#' @param df data frame
+#' @param y column which contains the corresponding groups, as a string or
+#'   symbol
+#' @param ... selection of column(s) with the data values, supports dplyr
+#'   selection rules
+#' @param subgrp optional, additional columns used to subgroup the data prior to
+#'   testing as a character vector
+#' @param normal logical, if TRUE will use fisher.test, otherwise chisq.test
+#'
+#' @return tibble with the results of significance testing
+#' @keywords internal
+#' @importFrom magrittr "%>%"
+p_cat_test <- function(df, y, ..., subgrp = NULL, exact = FALSE) {
+    y_var <- rlang::quo_name(rlang::enexpr(y))
+
+    x <- rlang::quos(...)
+
+    var_name <- rlang::sym("var_name")
+
+    if (exact) {
+        run_test <- stats::fisher.test
+    } else {
+        run_test <- stats::chisq.test
+    }
+
+    if (!is.null(subgrp)) {
+        var_name <- rlang::quos(!!!rlang::syms(subgrp), !!var_name)
+    }
 
     df %>%
-        select(!!sym("year"), !!!grp) %>%
-        gather("var_name", "value", !!!grp) %>%
-        group_by(!!var_name) %>%
+        gather("var_name", "value", !!!x) %>%
+        group_by(!!!var_name) %>%
         do(
             broom::tidy(
-                chisq.test(
-                    .$year, .$value
+                run_test(
+                    x = dplyr::pull(., y_var),
+                    y = dplyr::pull(., !!sym("value"))
                 )
             )
         ) %>%
